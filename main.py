@@ -1,6 +1,7 @@
 import random
 import logging
-logging.basicConfig(level=logging.DEBUG)
+import csv
+logging.basicConfig(filename="score.log", level=logging.DEBUG)
 
 def win_or_lose(user, computer):
     if user == computer:
@@ -18,6 +19,17 @@ def win_or_lose(user, computer):
     if user == "scissors" and computer == "rock":
         return "lose"
 
+def printScores():
+    with open('score.log') as logfile:
+        lines = logfile.read().splitlines() #splitlines make lines into an array
+    with open('scores.csv', 'w+') as csvfile:
+        fieldnames = ["Your choice", "Computer's choice", "Result", "Current score"]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for line in lines:
+            value = line.split("'") #split a string into an array containing each word as an element
+            writer.writerow({"Your choice": value[1], "Computer's choice": value[4], "Result": value[6], "Current score": value[8]})
+            
 choices = ["rock", "paper", "scissors"]
 score = 0
 while score < 3:
@@ -29,11 +41,10 @@ while score < 3:
         if result == "win":
             score += 1
         
-        logging.info(f"Current score '{score}'")
+        message = f"Your choice: '{user_choice}'; Computer's choice: '{computer_choice}'; Result:'{result}'; Current score '{score}'"
+        logging.info(message)
 
-        print(
-            f"Your choice: '{user_choice}'; Computer's choice: '{computer_choice}'; Result:'{result}'"
-        )
+        print(message)
 
         if result == "lose":
             break
@@ -46,3 +57,5 @@ if score == 3:
     print('you won')
 else:
     print('you lose. game over...')
+
+printScores()
